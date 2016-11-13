@@ -1,40 +1,83 @@
 ========================================================================
-    CONSOLE APPLICATION : IIRFilterDesign Project Overview
+    The IIR namespace files:  IIR.h and IIR.cpp
 ========================================================================
 
-AppWizard has created this IIRFilterDesign application for you.
+The IIR namespace includes a set of classes to design and test Infinite Impulse Response
+Digital Filter.
 
-This file contains a summary of what you will find in each of the files that
-make up your IIRFilterDesign application.
+________________________________________________________________________
+IIR::BiquadSection 
 
+This class represents a biquadratic digital section
+H(z) =  (b0 + b1 * z^-1 + b2 * z ^-2) / (1 + a1 * z^-1 + a2 * z ^-2)
 
-IIRFilterDesign.vcxproj
-    This is the main project file for VC++ projects generated using an Application Wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
+________________________________________________________________________
+IIR::PolarBiquadSection 
 
-IIRFilterDesign.vcxproj.filters
-    This is the filters file for VC++ projects generated using an Application Wizard. 
-    It contains information about the association between the files in your project 
-    and the filters. This association is used in the IDE to show grouping of files with
-    similar extensions under a specific node (for e.g. ".cpp" files are associated with the
-    "Source Files" filter).
+This class represents a biquadratic digital section with the poles and zeros
+in polar form
 
-IIRFilterDesign.cpp
-    This is the main application source file.
+________________________________________________________________________
+IIR::BiquadsCascade
 
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
+This class represents an array of IIR::BiquadSections implemented in Direct Form 2
+- to compute the output of the filter: use the ComputeOutput function 
 
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named IIRFilterDesign.pch and a precompiled types file named StdAfx.obj.
+________________________________________________________________________
+IIR::PolarBiquadsCascade
 
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
+This class represents an array of IIR::PolarBiquadSections
+- to compute the Magnitude of the Frequency Response: use the GetMagnitude function
+- to compute the Group Delay: use the GetGroupDelay function 
 
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
+________________________________________________________________________
+IIR::BiquadFilter
 
-/////////////////////////////////////////////////////////////////////////////
+This class represents an IIR filter with a set of biquad sections in cascade
+
+________________________________________________________________________
+IIR::ButterworthFilter
+
+This class represents a Butterworth IIR filter
+
+________________________________________________________________________
+IIR::ChebyshevFilter
+
+This class represents a Chebyshev IIR filter
+
+________________________________________________________________________
+IIR::EllipticFilter
+
+This class represents a Elliptic IIR filter
+________________________________________________________________________
+ EXAMPLE of a Chebyshev lowpass filter
+
+          Cut frequency:  1 rad
+          Stop frequency:  2.0 rad
+          Passband ripples:  1.0 dB
+          Stopband gain:  -30 dB
+
+#include <iostream>
+#include "IIR.h"
+
+int main()
+{
+	IIR::ChebyshevFilter filter;
+	if (filter.CreateLowPass(1.0, 1.0, 2.0, -30.0) == false)
+	{
+		cout << "Unable to create low pass filter" << endl;
+		return 0;
+	}
+	IIR::BiquadsCascade biquadsCascade = filter.biquadsCascade;
+	const int size = biquadsCascade.GetSize();
+	for (int i = 0; i < size; i++)
+	{
+		cout << "b0 = " << biquadsCascade[i].b0 << endl;
+		cout << "b1 = " << biquadsCascade[i].b1 << endl;
+		cout << "b2 = " << biquadsCascade[i].b2 << endl;
+		cout << "a1 = " << biquadsCascade[i].a1 << endl;
+		cout << "a2 = " << biquadsCascade[i].a2 << endl;
+		cout << "____________________"  << endl;
+	}
+	return 0;
+}

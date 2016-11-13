@@ -1,6 +1,8 @@
 #pragma once
 //____________________________________________________________________ IIR.h
 
+// The IIR namespace includes a set of classes to design and test Infinite Impulse Response Digital Filters
+
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES 1
 #endif

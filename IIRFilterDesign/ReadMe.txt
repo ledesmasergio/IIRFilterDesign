@@ -3,7 +3,7 @@
 ========================================================================
 
 The IIR namespace includes a set of classes to design and test Infinite Impulse Response
-Digital Filter.
+Digital Filters.
 
 ________________________________________________________________________
 IIR::BiquadSection 

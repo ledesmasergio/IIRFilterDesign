@@ -1,22 +1,17 @@
 #pragma once
 //____________________________________________________________________ IIR.h
-
 // The IIR namespace includes a set of classes to design and test Infinite Impulse Response Digital Filters
-
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES 1
-#endif
+// Author: Sergio Ledesma selo@ugto.mx
+// Date: November 13, 2016
 
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-#include <complex>
-using namespace std;
+
 
 #define FILTER_TYPE_LOWPASS 0
 #define FILTER_TYPE_HIGHPASS 1
-
 namespace IIR //________________________________________ namespace IIR::Ini
 {
 
@@ -44,13 +39,22 @@ public:
 	// w[n] = x[n] - a1*w[n-1] - a2*w[n-2]
 	// y[n] = b0*w[n] + b1*w[n-1] + b2*w[n-2]
 	inline double ComputeOutput(double x);
+	//
+	// It modifies the samples in buffer, the operation is in place (that is the output is written in the same buffer)
+	void ComputeOutput(double* buffer, const int numSamples);
+	//
+	// It modifies the samples in buffer, the operation is in place (that is the output is written in the same buffer)
+	// buffer has two channels, i.e., ch1, ch2, ch1, ch2, ch1, ch2 (numSamples is 3)
+	void ComputeOutput_2Channels(double* buffer, const int numSamples);
 private:
 	void Copy(const IIR::BiquadSection& init);
 	void Copy(const IIR::PolarBiquadSection& init);
 	//
 	double w0;
-	double w1;
-	double w2;
+	double w11;
+	double w12;
+	double w21;
+	double w22;
 };
 
 class PolarBiquadsCascade;
@@ -68,6 +72,13 @@ public:
 	//
 	// It returns y[n] given a value of x[n]
 	double ComputeOutput(double x);
+	//
+	// It modifies the samples in buffer, the operation is in place (that is the output is written in the same buffer)
+	void ComputeOutput(double* buffer, const int numSamples);
+	//
+	// It modifies the samples in buffer, the operation is in place (that is the output is written in the same buffer)
+	// buffer has two channels, i.e., ch1, ch2, ch1, ch2, ch1, ch2 (numSamples is 3)
+	void ComputeOutput_2Channels(double* buffer, const int numSamples);
 	//
 	IIR::BiquadsCascade& operator=(const IIR::BiquadsCascade& init);
 	IIR::BiquadsCascade& operator=(const IIR::PolarBiquadsCascade& init);
@@ -99,8 +110,9 @@ public:
 	double k;
 	IIR::PolarBiquadSection& operator=(const IIR::PolarBiquadSection& init);
 	IIR::PolarBiquadSection& operator=(const IIR::BiquadSection& init);
-	void GetPoles(complex<double>& out_pole1, complex<double>& out_pole2);
-	void GetZeros(complex<double>& out_zero1, complex<double>& out_zero2);
+	//
+	void GetPoles(double& out_reP1, double& out_imP1, double& out_reP2, double& out_imP2);
+	void GetZeros(double& out_reZ1, double& out_imZ1, double& out_reZ2, double& out_imZ2);
 private:
 	void Copy(const IIR::PolarBiquadSection& init);
 	void Copy(const IIR::BiquadSection& init);

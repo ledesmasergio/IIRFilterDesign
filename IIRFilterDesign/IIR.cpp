@@ -1,5 +1,5 @@
 #include "stdafx.h"  //_____________________________________________ IIR.cpp
-#include "IIR.h"
+#include "IIR.h" 
 
 namespace IIR //________________________________________ namespace IIR::Ini
 {
@@ -27,8 +27,10 @@ void BiquadSection::Clear()
 
 void BiquadSection::ResetTaps()
 {
-	w1 = 0.0;
-	w2 = 0.0;
+	w11 = 0.0;
+	w12 = 0.0;
+	w21 = 0.0;
+	w22 = 0.0;
 }
 
 BiquadSection::BiquadSection(const IIR::BiquadSection& init)
@@ -63,8 +65,10 @@ void BiquadSection::Copy(const IIR::BiquadSection& init)
 	a1 = init.a1;
 	a2 = init.a2;
 	//
-	w1 = init.w1;
-	w2 = init.w2;
+	w11 = init.w11;
+	w12 = init.w12;
+	w21 = init.w21;
+	w22 = init.w22;
 }
 
 void BiquadSection::Copy(const IIR::PolarBiquadSection& init)
@@ -75,7 +79,7 @@ void BiquadSection::Copy(const IIR::PolarBiquadSection& init)
 	double re = init.zeroR * cos(init.zeroAngle);
 	b1 = -2.0*re*b0; // b1/b0 = - zero - (zero)* = -2 Re (zero)
 	b2 = init.zeroR*init.zeroR*b0; // b2/b0 = (zero)(zero)* =  |z|^2
-								   //___________________________________________________________ poles
+	//___________________________________________________________ poles
 	re = init.poleR * cos(init.poleAngle);
 	a1 = -2.0*re; // a1 = - pole - (pole)* = -2 Re (pole)
 	a2 = init.poleR*init.poleR; // a2 = (pole)(pole)* =  |p|^2
@@ -85,11 +89,40 @@ void BiquadSection::Copy(const IIR::PolarBiquadSection& init)
 // y[n] = b0*w[n] + b1*w[n-1] + b2*w[n-2]
 double BiquadSection::ComputeOutput(double x)
 {
-	w0 = x - a1*w1 - a2*w2;
-	x = b0*w0 + b1*w1 + b2*w2;
-	w2 = w1;
-	w1 = w0;
+	w0 = x - a1*w11 - a2*w12;
+	x = b0*w0 + b1*w11 + b2*w12;
+	w12 = w11;
+	w11 = w0;
 	return x;
+}
+
+void BiquadSection::ComputeOutput(double* buffer, const int numSamples)
+{
+	for (int i = 0; i < numSamples; i++, buffer++)
+	{
+		w0 = *buffer - a1*w11 - a2*w12;
+		*buffer = b0*w0 + b1*w11 + b2*w12;
+		w12 = w11;
+		w11 = w0;
+	}
+}
+
+void BiquadSection::ComputeOutput_2Channels(double* buffer, const int numSamples)
+{
+	for (int i = 0; i < numSamples; i++)
+	{
+		w0 = *buffer - a1*w11 - a2*w12;
+		*buffer = b0*w0 + b1*w11 + b2*w12;
+		w12 = w11;
+		w11 = w0;
+		buffer++;
+		//
+		w0 = *buffer - a1*w21 - a2*w22;
+		*buffer = b0*w0 + b1*w21 + b2*w22;
+		w22 = w21;
+		w21 = w0;
+		buffer++;
+	}
 }
 
 //_____________________________________________________________________ IIR::BiquadsCascade
@@ -115,7 +148,7 @@ BiquadsCascade::BiquadsCascade(const IIR::PolarBiquadsCascade& init)
 
 BiquadsCascade::~BiquadsCascade()
 {
-	if (biquadSection != NULL) delete[] biquadSection;
+	if (biquadSection != NULL) delete [] biquadSection;
 }
 
 bool BiquadsCascade::SetSize(int numberBiquadSections)
@@ -151,6 +184,24 @@ double BiquadsCascade::ComputeOutput(double x)
 	return x;
 }
 
+void BiquadsCascade::ComputeOutput(double* buffer, const int numSamples)
+{
+	int count = 0;
+	for (IIR::BiquadSection *p = biquadSection; count < size; count++, p++)
+	{
+		p->ComputeOutput(buffer, numSamples);
+	}
+}
+
+void BiquadsCascade::ComputeOutput_2Channels(double* buffer, const int numSamples)
+{
+	int count = 0;
+	for (IIR::BiquadSection *p = biquadSection; count < size; count++, p++)
+	{
+		p->ComputeOutput_2Channels(buffer, numSamples);
+	}
+}
+
 IIR::BiquadsCascade& BiquadsCascade::operator=(const IIR::BiquadsCascade& init)
 {
 	Delete();
@@ -167,10 +218,10 @@ IIR::BiquadsCascade& BiquadsCascade::operator=(const IIR::PolarBiquadsCascade& i
 
 IIR::BiquadSection& BiquadsCascade::operator[](long index)
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	if (index < 0) throw L"BiquadsCascade: The index must be positive";
 	if (index >= size) throw L"BiquadsCascade: The index was too large";
-	#endif
+#endif
 	return biquadSection[index];
 }
 
@@ -270,22 +321,22 @@ IIR::PolarBiquadSection& PolarBiquadSection::operator=(const IIR::BiquadSection&
 	return *this;
 }
 
-void PolarBiquadSection::GetPoles(complex<double>& out_pole1, complex<double>& out_pole2)
+void PolarBiquadSection::GetPoles(double& out_reP1, double& out_imP1, double& out_reP2, double& out_imP2)
 {
-	out_pole1.real(poleR * cos(poleAngle));
-	out_pole1.imag(poleR * sin(poleAngle));
+	out_reP1 = poleR * cos(poleAngle);
+	out_imP1 = poleR * sin(poleAngle);
 	//_____________________________________________ Complex Conjugate
-	out_pole2.real(out_pole1.real());
-	out_pole2.imag(-out_pole1.imag());
+	out_reP2 = out_reP1;
+	out_imP2 = -out_imP1;
 }
 
-void PolarBiquadSection::GetZeros(complex<double>& out_zero1, complex<double>& out_zero2)
+void PolarBiquadSection::GetZeros(double& out_reZ1, double& out_imZ1, double& out_reZ2, double& out_imZ2)
 {
-	out_zero1.real(zeroR * cos(zeroAngle));
-	out_zero1.imag(zeroR * sin(zeroAngle));
+	out_reZ1 = zeroR * cos(zeroAngle);
+	out_imZ1 = zeroR * sin(zeroAngle);
 	//_____________________________________________ Complex Conjugate
-	out_zero2.real(out_zero1.real());
-	out_zero2.imag(-out_zero1.imag());
+	out_reZ2 = out_reZ1;
+	out_imZ2 = -out_imZ1;
 }
 
 void PolarBiquadSection::Copy(const IIR::PolarBiquadSection& init)
@@ -304,13 +355,13 @@ void PolarBiquadSection::Copy(const IIR::BiquadSection& init)
 	//___________________________________________________________ zeros
 	re = -init.b1/(2.0*init.b0); // b1/b0 = - zero - (zero)* = -2 Re (zero) ;      Re(zero) = - (b1/b0) / 2
 	im = sqrt(init.b2/init.b0 - re*re); // b2/b0 = (zero)(zero)* =  |z|^2;        Im(zero) = sqrt(b2/b0 - re*re);
-										//
+	//
 	zeroR = sqrt(re*re + im*im);
 	zeroAngle = atan2(im, re); // -pi <= angle < pi
-							   //___________________________________________________________ poles
+	//___________________________________________________________ poles
 	re = -init.a1/2.0; // c = - pole - (pole)* = -2 Re (pole) ;      Re(pole) = - c / 2
 	im = sqrt(init.a2 - re*re); // d = (pole)(pole)* =  |p|^2;        Im(pole) = sqrt(d - re*re);
-								//
+	//
 	poleR = sqrt(re*re + im*im);
 	poleAngle = atan2(im, re); //  -pi <= angle < pi
 }
@@ -380,19 +431,19 @@ IIR::PolarBiquadsCascade& PolarBiquadsCascade::operator=(const IIR::BiquadsCasca
 
 IIR::PolarBiquadSection& PolarBiquadsCascade::operator[](long index)
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	if (index < 0) throw L"PolarBiquadsCascade: The index must be positive";
 	if (index >= size) throw L"PolarBiquadsCascade: The index was too large";
-	#endif
+#endif
 	return biquadSection[index];
 }
 
 const IIR::PolarBiquadSection& PolarBiquadsCascade::operator[](long index) const
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	if (index < 0) throw L"PolarBiquadsCascade: The index must be positive";
 	if (index >= size) throw L"PolarBiquadsCascade: The index was too large";
-	#endif
+#endif
 	return biquadSection[index];
 }
 
@@ -451,7 +502,6 @@ double PolarBiquadsCascade::GetGroupDelay(double freq_rads)
 	}
 	return tao;
 }
-
 
 bool PolarBiquadsCascade::Copy(const IIR::PolarBiquadsCascade& init)
 {
@@ -704,7 +754,7 @@ bool EllipticFilter::Create(int filter_type, double cutFreq_rads, double passBan
 	const double alpha = sqrt(wp*ws); // EQ. (5.8)
 	const double vv = pow(10.0, Ap/20.0);
 	const double V = (1.0/(2.0*n))*log((vv + 1.0)/(vv - 1.0)); // EQ. (5.12)
-															   //______________________________________________________________ EQ. (5.13)
+	//______________________________________________________________ EQ. (5.13)
 	double pp;
 	int m;
 	//____________________ Numerator
@@ -835,7 +885,7 @@ bool EllipticFilter::Create(int filter_type, double cutFreq_rads, double passBan
 		//________________
 		this->biquadsCascade = biquads;
 	}
-	if (X != NULL) delete[] X;
+	if (X != NULL) delete [] X;
 	if (Y != NULL) delete[] Y;
 	if (a_ != NULL) delete[] a_;
 	if (b_ != NULL) delete[] b_;

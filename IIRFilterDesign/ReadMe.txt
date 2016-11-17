@@ -1,9 +1,16 @@
 ========================================================================
-    The IIR namespace files:  IIR.h and IIR.cpp
+    The IIR Library:  IIR.h and IIR.cpp
+    Version 1.0
 ========================================================================
 
-The IIR namespace includes a set of classes to design and test Infinite Impulse Response
-Digital Filters.
+The IIR namespace includes a set of classes to design and test Infinite 
+Impulse Response Digital Filters.
+
+________________________________________________________________________
+LICENSE
+
+The IIR library (files IIR.h and IIR.cpp) is licensed under the GNU 
+General Pulbic License (GPL), version 3
 
 ________________________________________________________________________
 IIR::BiquadSection 
@@ -14,19 +21,22 @@ H(z) =  (b0 + b1 * z^-1 + b2 * z ^-2) / (1 + a1 * z^-1 + a2 * z ^-2)
 ________________________________________________________________________
 IIR::PolarBiquadSection 
 
-This class represents a biquadratic digital section with the poles and zeros
-in polar form
+This class represents a biquadratic digital section with the poles 
+and zeros in polar form
 
 ________________________________________________________________________
 IIR::BiquadsCascade
 
-This class represents an array of IIR::BiquadSections implemented in Direct Form 2
+This class represents an array of IIR::BiquadSections implemented in 
+Direct Form 2
+
 - to compute the output of the filter: use the ComputeOutput function 
 
 ________________________________________________________________________
 IIR::PolarBiquadsCascade
 
 This class represents an array of IIR::PolarBiquadSections
+
 - to compute the Magnitude of the Frequency Response: use the GetMagnitude function
 - to compute the Group Delay: use the GetGroupDelay function 
 

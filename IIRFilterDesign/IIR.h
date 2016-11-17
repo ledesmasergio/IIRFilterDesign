@@ -1,14 +1,26 @@
 #pragma once
+//____________________________________________________________________
+// IIR Library Version 1.0 (Files: IIR.h and IIR.cpp)
+// The IIR library has a set of classes to design, analyze and test IIR digital filters
+// © Copyright (C) 2016.  Sergio Ledesma (selo@ugto.mx)
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //____________________________________________________________________ IIR.h
 // The IIR namespace includes a set of classes to design and test Infinite Impulse Response Digital Filters
-// Author: Sergio Ledesma selo@ugto.mx
-// Date: November 13, 2016
+// Date: November 16, 2016
 
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-
 
 #define FILTER_TYPE_LOWPASS 0
 #define FILTER_TYPE_HIGHPASS 1

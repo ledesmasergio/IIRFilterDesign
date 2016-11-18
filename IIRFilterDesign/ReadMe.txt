@@ -75,8 +75,8 @@ ________________________________________________________________________
 
 int main()
 {
-	IIR::ChebyshevFilter filter;
-	if (filter.CreateLowPass(1.0, 1.0, 2.0, -30.0) == false)
+	IIR::EllipticFilter filter;
+	if (filter.CreateLowPass(2.0, 1.0, 2.5, -50.0) == false)
 	{
 		std::cout << "Unable to create low pass filter" << std::endl;
 		return 0;

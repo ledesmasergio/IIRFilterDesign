@@ -4,10 +4,11 @@
 #include <iostream>
 #include "IIR.h"
 
+//_________________________________________ Design an Elliptic Lowpass filter wc=2.0, ws=2.5
 int main()
 {
-	IIR::ChebyshevFilter filter;
-	if (filter.CreateLowPass(1.0, 1.0, 2.0, -30.0) == false)
+	IIR::EllipticFilter filter;
+	if (filter.CreateLowPass(2.0, 1.0, 2.5, -50.0) == false)
 	{
 		std::cout << "Unable to create low pass filter" << std::endl;
 		return 0;
@@ -26,4 +27,5 @@ int main()
 	getchar();
     return 0;
 }
+
 

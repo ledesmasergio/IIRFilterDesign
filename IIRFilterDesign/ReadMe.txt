@@ -60,12 +60,12 @@ IIR::EllipticFilter
 
 This class represents a Elliptic IIR filter
 ________________________________________________________________________
- EXAMPLE of a Chebyshev lowpass filter
-
-          Cut frequency:  1 rad
-          Stop frequency:  2.0 rad
-          Passband ripples:  1.0 dB
-          Stopband gain:  -30 dB
+ EXAMPLE 1:
+	Elliptic lowpass filter
+	Cut frequency:  2 rad
+	Stop frequency:  2.5 rad
+	Passband ripples:  1.0 dB
+	Stopband gain:  -50 dB
 
 // IIRFilterDesign.cpp : Defines the entry point for the console application.
 //
@@ -94,4 +94,76 @@ int main()
 	}
 	getchar();
     return 0;
+}
+
+________________________________________________________________________
+ EXAMPLE 2:
+	Butterworth lowpass filter
+	Cut frequency:  1 rad
+	Stop frequency:  2.0 rad
+	Passband ripples:  1.0 dB
+	Stopband gain:  -30 dB
+
+// IIRFilterDesign.cpp : Defines the entry point for the console application.
+//
+#include "stdafx.h"
+#include <iostream>
+#include "IIR.h"
+#define FREQ_COUNT 16
+
+int main()
+{
+	IIR::ButterworthFilter filter;
+	double frequency;
+	if (filter.CreateLowPass(1.0, 1.0, 2.0, -30.0) == false)
+	{
+		std::cout << "Unable to create low pass filter" << std::endl;
+		return 0;
+	}
+	for (int i = 0; i < FREQ_COUNT; i++)
+	{
+		frequency = i*M_PI/(FREQ_COUNT-1.0);
+		std::cout << frequency << " rads -> ";
+		std::cout << filter.biquadsCascade.GetMagnitude(frequency);
+		std::cout << std::endl;
+	}
+	getchar();
+	return 0;
+}
+
+________________________________________________________________________
+ EXAMPLE 3: Real time Digital Signal Processing
+	Elliptic highpass filter
+	Cut frequency:  2.5 rad
+	Stop frequency:  2.0 rad
+	Passband ripples:  1.0 dB
+	Stopband gain:  -50 dB
+
+// IIRFilterDesign.cpp : Defines the entry point for the console application.
+//
+#include "stdafx.h"
+#include <iostream>
+#include "IIR.h"
+#define BUFFER_SIZE 1024
+
+int main()
+{
+	IIR::EllipticFilter filter;
+	if (filter.CreateHighPass(2.5, 1.0, 2.0, -50.0) == false)
+	{
+		std::cout << "Unable to create high pass filter" << std::endl;
+		return 0;
+	}
+	IIR::BiquadsCascade biquadsCascade = filter.biquadsCascade;
+	double buffer[BUFFER_SIZE];
+	while(...)
+	{
+		//______________________________________________ 1. Fill the buffer
+		for (int i = 0; i < BUFFER_SIZE; i++) buffer[i] = rand()/(RAND_MAX-1.0);
+		//______________________________________________ 2. DSP
+		biquadsCascade.ComputeOutput(buffer, BUFFER_SIZE);
+		//______________________________________________ 3. Do something with buffer
+		// ...
+	}
+	return 0;
 }

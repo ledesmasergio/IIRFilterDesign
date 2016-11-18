@@ -5,19 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IIRFilterDesign", "IIRFilterDesign\IIRFilterDesign.vcxproj", "{99AD6565-3C89-4717-9BE1-6A4B7D5E713A}"
 EndProject
-Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "BiquadLab", "IIRFilterDesign\BiquadLab.exe", "{265DF20C-58C9-41A4-B5F7-FD2A0D884DD6}"
-	ProjectSection(DebuggerProjectSystem) = preProject
-		PortSupplier = 00000000-0000-0000-0000-000000000000
-		Executable = C:\selo\sx\Articulos Publicados\2016\Code for IIR\IIRFilterDesign\IIRFilterDesign\BiquadLab.exe
-		RemoteMachine = SELO
-		StartingDirectory = C:\selo\sx\Articulos Publicados\2016\Code for IIR\IIRFilterDesign\IIRFilterDesign
-		Environment = Default
-		LaunchingEngine = 00000000-0000-0000-0000-000000000000
-		UseLegacyDebugEngines = No
-		LaunchSQLEngine = No
-		AttachLaunchAction = No
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,10 +21,6 @@ Global
 		{99AD6565-3C89-4717-9BE1-6A4B7D5E713A}.Release|x64.Build.0 = Release|x64
 		{99AD6565-3C89-4717-9BE1-6A4B7D5E713A}.Release|x86.ActiveCfg = Release|Win32
 		{99AD6565-3C89-4717-9BE1-6A4B7D5E713A}.Release|x86.Build.0 = Release|Win32
-		{265DF20C-58C9-41A4-B5F7-FD2A0D884DD6}.Debug|x64.ActiveCfg = Release|x86
-		{265DF20C-58C9-41A4-B5F7-FD2A0D884DD6}.Debug|x86.ActiveCfg = Release|x86
-		{265DF20C-58C9-41A4-B5F7-FD2A0D884DD6}.Release|x64.ActiveCfg = Release|x86
-		{265DF20C-58C9-41A4-B5F7-FD2A0D884DD6}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
